@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-page="dashboard">
+<head>
+  <meta charset="UTF-8" />
+  <title>Data Dashboard · Home</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+  :root{
+    --dash-grad: linear-gradient(90deg,#02b2ff 0%,#5850ec 60%,#b136ff 100%);
+    --card-bg: rgba(15,28,39,.75);
+    --card-border: #26394a;
+    --glass-blur: blur(14px);
+  }
+  body{ background: radial-gradient(ellipse at top,#0e1822 0%,#0a1218 100%) fixed; }
+
+  .navbar{
+    backdrop-filter: blur(16px);
+    background: rgba(10,18,24,.55);
+    border-bottom:1px solid #203040;
+  }
+
+  /* UTIL bar (match VIS/ANALYSIS) */
+  #util-bar{
+    background:var(--dash-grad);
+    border-radius:18px;
+    padding:.6rem .9rem;
+    display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;
+    margin:1.1rem auto 1.4rem;
+    width:min(100%,1180px);
+    box-shadow:0 10px 28px -14px rgba(2,178,255,.45);
+    position:relative;z-index:3;
+  }
+  #util-bar button{font-size:.58rem;padding:.32rem .7rem;}
+  #util-bar .chip{
+    background:#0d2032;border:1px solid #204158;border-radius:10px;
+    padding:.28rem .55rem;font-size:.56rem;color:#d5e9f7;letter-spacing:.4px;
+  }
+  #util-bar .ver{margin-left:auto;font-size:.55rem;opacity:.7;color:#dbe6f4;}
+
+  /* GRID / CARDS */
+  .dash-wrapper{
+    width:min(1280px,96%);
+    margin:0 auto 4rem;
+    display:grid;
+    gap:1.6rem;
+    grid-template-columns:1fr 1fr;
+  }
+  @media(max-width:1020px){ .dash-wrapper{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:18px;
+    padding:1.1rem 1.4rem 1.3rem;
+    position:relative;
+    box-shadow:0 0 0 1px rgba(255,255,255,.02),0 22px 45px -28px rgba(0,0,0,.7);
+    backdrop-filter:var(--glass-blur);
+  }
+  .card h2{margin:0 0 .75rem;font-size:.95rem;font-weight:600;color:#e7f2fb;letter-spacing:.4px;}
+  .card h3{margin:0 0 .65rem;font-size:.8rem;font-weight:600;color:#d6e8f6;letter-spacing:.4px;}
+  .card p{margin:.25rem 0;font-size:.63rem;color:#b8c9d6;line-height:1.55;}
+  .badge-pill{
+    background:#1f2e3b;color:#9fb5c4;border:1px solid #2b4254;
+    font-size:.55rem;border-radius:40px;padding:.2rem .5rem;margin:.1rem;display:inline-block;
+  }
+  .btn-grad{
+    background:var(--dash-grad);border:none;color:#fff;font-weight:600;
+    padding:.55rem 1.05rem;font-size:.62rem;border-radius:10px;cursor:pointer;letter-spacing:.4px;
+    box-shadow:0 10px 26px -12px rgba(2,140,255,.6);
+  }
+  .btn-grad:hover{ filter:brightness(1.05); }
+  .btn-outline-sm{
+    background:transparent;color:#8eb4c9;border:1px solid #2a4156;
+    padding:.42rem .8rem;font-size:.58rem;border-radius:9px;cursor:pointer;
+    transition:background .16s,border .16s;
+  }
+  .btn-outline-sm:hover{ background:#1a2734; border-color:#40607c; color:#cde5f3; }
+  .row{display:flex;gap:1.1rem;flex-wrap:wrap;}
+  .row>.flex{flex:1;}
+  .inline{display:inline-flex;gap:.45rem;flex-wrap:wrap;align-items:center;}
+  .right{margin-left:auto;}
+
+  #active-meta{font-size:.6rem;color:#cfe3f1;line-height:1.4;margin:.4rem 0 .2rem;}
+  #active-meta code{background:#1d2d3b;padding:.15rem .32rem;border-radius:6px;margin:0 .3rem 0 0;font-size:.55rem;}
+  #active-none{font-size:.6rem;color:#6f8798;margin:.2rem 0 .4rem;}
+
+  .table-scroll{overflow:auto;max-height:320px;border:1px solid #243748;border-radius:12px;padding:.3rem;background:#0f1b24;}
+  table.data-table{border-collapse:collapse;width:100%;font-size:.62rem;color:#d9e7f3;}
+  table.data-table thead th{
+    position:sticky;top:0;background:#1a2c3a;color:#e4edf4;
+    padding:.42rem .55rem;border:1px solid #1e2f3c;font-weight:600;
+  }
+  table.data-table tbody td{
+    padding:.35rem .55rem;border:1px solid #1e2f3c;color:#d9e7f3;white-space:nowrap;
+  }
+  table.data-table tbody tr:nth-child(odd){background:#132433;}
+  .status-line{font-size:.55rem;color:#89a6ba;margin-top:.3rem;min-height:14px;}
+
+  input[type="text"],input[type="url"],textarea,select{
+    background:#132433;border:1px solid #243748;border-radius:8px;color:#eaf4ff;
+    padding:.44rem .55rem;font-size:.6rem;width:100%;
+  }
+  input[type="file"]{font-size:.58rem;color:#cfe3f1;}
+  label{font-size:.58rem;color:#9fb3c3;margin-bottom:.22rem;display:block;letter-spacing:.3px;}
+  fieldset{border:1px solid #223443;border-radius:12px;padding:.75rem 1rem;margin:0 0 1.1rem;}
+  legend{padding:0 .45rem;font-size:.58rem;color:#a9c2d2;letter-spacing:.3px;}
+  .hint{font-size:.53rem;color:#738ea0;margin-top:.25rem;}
+  footer{margin:3.2rem 0 2rem;text-align:center;font-size:.58rem;color:#4f6b7d;}
+  </style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="nav-left">
+    <div class="nav-brand">📊 Data Dashboard</div>
+    <ul class="nav-links">
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="analysis.html">Analysis</a></li>
+      <li><a href="visualization.html">Visualize</a></li>
+      <li><a href="admin.html" class="admin-link">Admin</a></li>
+      <li><a href="#" id="logout-link">Logout</a></li>
+    </ul>
+  </div>
+  <div class="nav-right">
+    <span id="role-badge" class="badge-role">ROLE</span>
+  </div>
+</header>
+
+<!-- UTIL BAR -->
+<div id="util-bar">
+  <button class="btn-outline btn-small" id="btn-refresh-meta">Refresh</button>
+  <button class="btn-outline btn-small" id="md-report-btn">Markdown</button>
+  <button class="btn-outline btn-small" id="pdf-report-btn">PDF</button>
+  <button class="btn-outline btn-small" id="btn-clear-cache">Clear Cache</button>
+
+  <span id="active-file-chip" class="chip">Active: —</span>
+  <span class="ver">v4.6 • NIT 3004 H2B1</span>
+</div>
+
+<main class="dash-wrapper">
+
+  <!-- WELCOME -->
+  <section class="card" id="welcome-card">
+    <h2>Welcome</h2>
+    <p>This suite unifies dataset ingestion, automated profiling, statistical mining, AI narration and rich visualization. Start by uploading or fetching a dataset. For one‑click insights use <em>Auto Explore</em> later.</p>
+    <div class="inline" style="margin:.7rem 0 0;">
+      <button class="btn-grad" id="begin-analysis-btn">Begin Analysis</button>
+      <button class="btn-grad" style="background:linear-gradient(90deg,#ff6b9e,#9f6bff);" id="oneclick-ai-btn">One‑Click AI</button>
+    </div>
+    <div class="chips">
+      <span class="badge-pill">Secure Sessions</span>
+      <span class="badge-pill">AI Summaries</span>
+      <span class="badge-pill">Clustering</span>
+      <span class="badge-pill">PCA</span>
+      <span class="badge-pill">Rules Mining</span>
+    </div>
+  </section>
+
+  <!-- ACTIVE DATASET -->
+  <section class="card" id="active-card">
+    <h2>Active Dataset</h2>
+    <div id="active-meta"></div>
+    <div id="active-none">No active dataset.</div>
+    <div class="inline" style="margin-top:.6rem;">
+      <button class="btn-outline-sm" id="reload-active-btn">Reload</button>
+      <button class="btn-outline-sm" onclick="window.location='visualization.html'">Visualize →</button>
+    </div>
+    <div class="status-line" id="meta-status"></div>
+  </section>
+
+  <!-- QUICK UPLOAD / FETCH -->
+  <section class="card" id="upload-card">
+    <h2>Quick Upload</h2>
+
+    <fieldset>
+      <legend>Local CSV</legend>
+      <div class="row">
+        <div class="flex"><input type="file" id="file-input" accept=".csv" /></div>
+        <button class="btn-grad" id="upload-btn" style="padding:.44rem .9rem;font-size:.58rem;">Upload</button>
+      </div>
+      <div class="status-line" id="upload-status"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Remote CSV URL</legend>
+      <div class="row">
+        <div class="flex"><input type="url" id="remote-url" placeholder="https://example.com/data.csv"/></div>
+        <button class="btn-outline-sm" id="fetch-btn">Fetch</button>
+      </div>
+      <div class="status-line" id="fetch-status"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Smart Search</legend>
+      <input type="text" id="search-input" placeholder="e.g. world bank gdp csv" />
+      <div class="inline" style="margin-top:.4rem;">
+        <button class="btn-outline-sm" id="smart-search-btn">Search</button>
+        <span class="status-line" id="search-status" style="margin:0;"></span>
+      </div>
+      <div id="search-results" class="hint" style="margin-top:.45rem;max-height:110px;overflow:auto;"></div>
+    </fieldset>
+  </section>
+
+  <!-- AI QUICK INSIGHT -->
+  <section class="card" id="ai-quick-card">
+    <h2>Quick AI Insight</h2>
+    <label for="chart-type">Context</label>
+    <select id="chart-type">
+      <option value="overview">Overview</option>
+      <option value="value counts">Value Counts</option>
+      <option value="correlation heatmap">Correlation Heatmap</option>
+      <option value="pca scatter">PCA Scatter</option>
+      <option value="kmeans clustering">KMeans</option>
+      <option value="association rules">Association Rules</option>
+    </select>
+    <label for="chart-description" style="margin-top:.6rem;">Prompt / focus</label>
+    <textarea id="chart-description" placeholder="e.g. strongest relationships & anomalies." style="min-height:86px;"></textarea>
+    <div class="inline" style="margin-top:.6rem;">
+      <button class="btn-grad" id="ai-generate-btn">Generate AI Insight</button>
+    </div>
+    <div class="ai-box" id="ai-summary" style="min-height:110px;margin-top:.65rem;font-size:.63rem;">
+      <p class="text-dim m0">No AI insight yet.</p>
+    </div>
+  </section>
+
+  <!-- QUICK PREVIEW -->
+  <section class="card" id="preview-card" style="grid-column:1 / -1;">
+    <div class="row" style="align-items:center;margin-bottom:.6rem;">
+      <h2 style="margin:0;">Quick Preview</h2>
+      <span class="badge-pill right">first 12 rows</span>
+    </div>
+    <div id="preview-content" class="table-scroll" style="min-height:190px;"></div>
+    <div class="status-line" id="preview-status"></div>
+  </section>
+
+</main>
+
+<footer>Data Mining Dashboard – Dashboard Module • v4.6 • NIT 3004 H2B1</footer>
+
+<script defer src="script.js?v=4.6.2"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async ()=>{
+  await ensureAuthForProtectedPages?.();
+
+  // Sync and show meta
+  syncActiveFile?.(true).then(async fn=>{
+    if(fn){
+      try{ await handleApi("/api/set_active",{method:"POST",body:{filename:fn}}); }catch(_){}
+    }
+    loadMeta(); previewDataset();
+  });
+
+  // Util bar hooks
+  $("btn-refresh-meta")?.addEventListener("click", loadMeta);
+  $("md-report-btn")?.addEventListener("click", downloadMarkdownReport);
+  $("pdf-report-btn")?.addEventListener("click", downloadPdfReport);
+  $("btn-clear-cache")?.addEventListener("click", ()=>{ clearAnalysis?.(); toast("Cache cleared","success"); });
+
+  // Buttons
+  $("reload-active-btn")?.addEventListener("click", ()=>{ loadMeta(); previewDataset(); });
+  $("begin-analysis-btn")?.addEventListener("click", ()=>location.href="analysis.html");
+  $("oneclick-ai-btn")?.addEventListener("click", async ()=>{
+    const st=$("meta-status"); st.textContent="Running Auto Explore...";
+    try{ await autoExplore?.(); st.textContent="Done ✓"; location.href="visualization.html"; }
+    catch(e){ st.textContent="Error"; toast(e.message,"error"); }
+  });
+
+  // Upload / fetch / search
+  $("upload-btn")?.addEventListener("click", uploadDataset);
+  $("fetch-btn")?.addEventListener("click", ()=>{ const u=$("remote-url")?.value?.trim(); if(u) fetchFromInternet(u); });
+  $("smart-search-btn")?.addEventListener("click", smartSearch);
+
+  // AI
+  $("ai-generate-btn")?.addEventListener("click", generateAISummary);
+
+  // Logout
+  $("logout-link")?.addEventListener("click", e=>{ e.preventDefault(); logout?.(); });
+
+  // Meta loader (dashboard version)
+  async function loadMeta(){
+    const metaBox=$("active-meta"), noneBox=$("active-none"), status=$("meta-status");
+    const chip=$("active-file-chip");
+    try{
+      status.textContent="Loading...";
+      const js=await handleApi("/api/files");
+      const active=js.active||localStorage.getItem("filename");
+      if(!active){ noneBox.style.display="block"; metaBox.innerHTML=""; status.textContent=""; chip.textContent="Active: —"; return; }
+      noneBox.style.display="none"; chip.textContent="Active: "+active;
+      const rec=(js.files||[]).find(f=>f.filename===active)||{};
+      metaBox.innerHTML=`<code>${active}</code> Rows: ${rec.rows??"?"} · Cols: ${rec.columns??"?"} · Size: ${rec.size_bytes?(rec.size_bytes/1024).toFixed(1)+" KB":"?"}`;
+      status.textContent="";
+    }catch(e){ status.textContent="Metadata error: "+e.message; }
+  }
+});
+</script>
+</body>
+</html>

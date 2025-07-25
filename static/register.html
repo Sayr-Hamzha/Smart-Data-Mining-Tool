@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-page="register">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Account · Data Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  
+  <script defer src="script.js?v=4.6.2"></script>
+
+
+  <style>
+    body{
+      background: radial-gradient(ellipse at top,#0e1822 0%,#0a1218 100%) fixed;
+      min-height:100vh; display:flex; flex-direction:column;
+    }
+    .navbar{
+      backdrop-filter: blur(16px);
+      background: rgba(10,18,24,.55);
+      border-bottom:1px solid #203040;
+    }
+    .auth-wrapper{
+      flex:1; display:flex; align-items:center; justify-content:center;
+      padding:2.6rem 1rem 3.2rem;
+    }
+    .auth-card{
+      width:100%; max-width:400px;
+      background:rgba(15,28,39,.78);
+      border:1px solid #26394a;
+      border-radius:18px;
+      padding:2.1rem 2rem 2.3rem;
+      box-shadow:0 0 0 1px rgba(255,255,255,.02),0 26px 50px -28px rgba(0,0,0,.75);
+      backdrop-filter: blur(14px);
+    }
+    .auth-title{
+      margin:0 0 1.4rem;
+      font-size:1.18rem; font-weight:700; text-align:center;
+    }
+    .form-row{margin-bottom:.85rem;}
+    label{
+      display:block; font-size:.6rem; color:#9fb3c3; margin-bottom:.28rem; letter-spacing:.3px;
+    }
+    .input{
+      width:100%; background:#132433; border:1px solid #243748; border-radius:8px;
+      color:#eaf4ff; padding:.5rem .6rem; font-size:.62rem;
+    }
+    .password-wrapper{position:relative; display:flex; align-items:center;}
+    .password-wrapper input{padding-right:2.1rem;}
+    .toggle-eye{
+      position:absolute; right:.45rem; top:50%; transform:translateY(-50%);
+      background:transparent; border:none; color:#b7cddc; font-size:.8rem; cursor:pointer;
+    }
+    .btn-auth{
+      width:100%; background:linear-gradient(90deg,#02b2ff,#7a4bff);
+      border:none; color:#fff; font-weight:600; padding:.62rem 1rem; font-size:.68rem;
+      border-radius:10px; cursor:pointer; letter-spacing:.4px;
+      box-shadow:0 10px 26px -12px rgba(2,140,255,.6);
+      transition:filter .18s;
+    }
+    .btn-auth:hover{ filter:brightness(1.05); }
+    #register-status{min-height:18px;margin-top:.55rem;font-size:.6rem;}
+    .inline-link{color:#6cbcff;text-decoration:underline;}
+    footer{
+      text-align:center;font-size:.58rem;color:#4f6b7d;margin:1.4rem 0 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="navbar">
+    <div class="nav-left">
+      <div class="nav-brand">📊 Data Dashboard</div>
+      <ul class="nav-links">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="register.html" class="active">Register</a></li>
+      </ul>
+    </div>
+    <div class="nav-right"></div>
+  </header>
+
+  <!-- AUTH -->
+  <div class="auth-wrapper">
+    <div class="auth-card fade-slide-up">
+      <h1 class="auth-title gradient-text">Create Account</h1>
+
+      <form onsubmit="event.preventDefault();registerSubmit();" class="form">
+        <div class="form-row">
+          <label for="reg-username">Username</label>
+          <input id="reg-username" class="input" required placeholder="Choose username">
+        </div>
+
+        <div class="form-row">
+          <label for="reg-password">Password</label>
+          <div class="password-wrapper">
+            <input id="reg-password" type="password" class="input" required placeholder="••••••">
+            <button type="button" class="toggle-eye" onclick="togglePwd('reg-password', this)">👁</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="reg-role">Role</label>
+          <select id="reg-role" class="input">
+            <option value="user" selected>User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <button class="btn-auth" style="margin-top:.6rem;">Register</button>
+        <div id="register-status" class="text-small text-danger"></div>
+      </form>
+
+      <p class="text-small" style="margin-top:1.3rem;text-align:center;">
+        Have an account? <a href="login.html" class="inline-link">Login</a>
+      </p>
+    </div>
+  </div>
+
+  <footer>Data Mining Dashboard • v4.3 • NIT 3004 H2B1</footer>
+
+  <!-- Minimal guards if script.js isn't loaded yet -->
+  <script>
+    
+    
+    function togglePwd(id,btn){
+      const el=document.getElementById(id); if(!el) return;
+      const open=el.type==="password"; el.type=open?"text":"password";
+      btn.textContent=open?"🙈":"👁";
+    }
+    async function registerSubmit(){
+      const username=document.getElementById("reg-username").value.trim();
+      const password=document.getElementById("reg-password").value;
+      const role=document.getElementById("reg-role").value;
+      const st=document.getElementById("register-status");
+      st.textContent="Registering...";
+      try{
+        await handleApi("/api/register",{method:"POST",body:{username,password,role}});
+        st.textContent="Success. Redirecting to login...";
+        setTimeout(()=>location.href="login.html",700);
+      }catch(e){ st.textContent=e.message; }
+    }
+  </script>
+</body>
+</html>

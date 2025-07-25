@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" data-page="feedback">
+<head>
+  <meta charset="UTF-8">
+  <title>Feedback · Data Mining Suite</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <div class="nav-brand">📊 Data Dashboard</div>
+      <ul class="nav-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="analysis.html">Analysis</a></li>
+        <li><a href="visualization.html">Visualize</a></li>
+        <li><a href="admin.html">Admin</a></li>
+        <li><a class="active" href="feedback.html">Feedback</a></li>
+      </ul>
+    </div>
+    <div class="nav-right">
+      <span class="badge-role" id="role-badge">ROLE</span>
+      <button class="btn btn-outline" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="wrapper fade-slide-up">
+    <div class="panel">
+      <div class="panel-header">
+        <h3 class="panel-title gradient-text">Feedback & Ideas</h3>
+      </div>
+      <p class="text-small text-dim">Placeholder area for collecting user feedback, ranking planned features, or doing A/B prompt tests.</p>
+      <textarea class="input" placeholder="Share suggestions..."></textarea>
+      <div class="inline">
+        <button class="btn btn-accent">Submit (demo)</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

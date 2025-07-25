@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Data Report – {{ filename }}</title>
+<style>
+  body{font-family:Inter,Arial,sans-serif;color:#1e293b;margin:32px 36px 40px;font-size:12px;line-height:1.45;}
+  h1,h2,h3{margin:0 0 8px;color:#0f172a;}
+  h1{font-size:24px;}
+  h2{font-size:18px;margin-top:26px;}
+  h3{font-size:14px;margin-top:18px;}
+  .muted{color:#64748b;font-size:11px;}
+  .section{margin-bottom:26px;}
+  table{border-collapse:collapse;width:100%;font-size:11px;margin-top:6px;}
+  th,td{border:1px solid #cbd5e1;padding:4px 6px;text-align:right;}
+  th:first-child,td:first-child{text-align:left;}
+  thead th{background:#f1f5f9;font-weight:600;}
+  .badge{display:inline-block;padding:2px 6px;border-radius:6px;background:#e2e8f0;font-size:10px;margin-right:4px;}
+  .ai-block p{margin:2px 0 6px;}
+  ul{margin:4px 0 8px 18px;}
+  img{max-width:100%;display:block;margin:6px 0 8px;}
+  .small{font-size:10px;color:#475569;}
+  .pagebreak{page-break-before:always;}
+</style>
+</head>
+<body>
+
+<h1>Data Mining Report</h1>
+<p class="muted">{{ today }} • File: <strong>{{ filename }}</strong> • NIT 3004 H2B1</p>
+
+<div class="section">
+  <h2>1. Dataset Overview</h2>
+  <p class="small">Core meta information from Auto Explore.</p>
+  {% if meta %}
+    <span class="badge">{{ meta.rows or "?" }} rows</span>
+    <span class="badge">{{ meta.columns or "?" }} cols</span>
+    <span class="badge">{{ meta.numeric_cols or "?" }} numeric</span>
+    <span class="badge">{{ meta.categorical_cols or "?" }} categorical</span>
+  {% else %}
+    <p>No meta captured.</p>
+  {% endif %}
+</div>
+
+<div class="section">
+  <h2>2. AI Narrative</h2>
+  {% if ai %}
+    <div class="ai-block">
+      {% if ai.summary %}<p><strong>Summary:</strong> {{ ai.summary }}</p>{% endif %}
+      {% if ai.key_points %}
+        <p><strong>Key Points</strong></p>
+        <ul>{% for k in ai.key_points %}<li>{{ k }}</li>{% endfor %}</ul>
+      {% endif %}
+      {% if ai.anomalies %}
+        <p><strong>Anomalies</strong></p>
+        <ul>{% for a in ai.anomalies %}<li>{{ a }}</li>{% endfor %}</ul>
+      {% endif %}
+      {% if ai.recommendation %}<p><strong>Recommendation:</strong> {{ ai.recommendation }}</p>{% endif %}
+    </div>
+  {% else %}
+    <p>No AI insight generated.</p>
+  {% endif %}
+</div>
+
+<div class="pagebreak"></div>
+
+<div class="section">
+  <h2>3. Value Counts</h2>
+  {% if charts.value_counts %}
+    <img src="{{ charts.value_counts }}" alt="Value Counts Chart">
+  {% endif %}
+  {% if vc.labels %}
+    <table>
+      <thead><tr><th>Label</th><th>Count</th></tr></thead>
+      <tbody>
+        {% for l,v in vc.labels|zip(vc.values) %}
+          <tr><td>{{ l }}</td><td>{{ v }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No value counts recorded.</p>
+  {% endif %}
+</div>
+
+<div class="section">
+  <h2>4. Correlation Matrix (Top 10 pairs)</h2>
+  {% if top_corr %}
+  <table>
+    <thead><tr><th>Col A</th><th>Col B</th><th>r</th></tr></thead>
+    <tbody>
+      {% for a,b,absr,r in top_corr %}
+        <tr><td>{{ a }}</td><td>{{ b }}</td><td>{{ '%.4f' % r }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No correlation found.</p>
+  {% endif %}
+</div>
+
+<div class="pagebreak"></div>
+
+<div class="section">
+  <h2>5. PCA</h2>
+  {% if charts.pca %}
+    <img src="{{ charts.pca }}" alt="PCA Scatter">
+  {% endif %}
+  {% if pca.explained %}
+    <table>
+      <thead><tr><th>Component</th><th>Explained Variance</th></tr></thead>
+      <tbody>
+        {% for v in pca.explained %}
+          <tr><td>PC{{ loop.index }}</td><td>{{ '%.4f' % v }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+
+<div class="section">
+  <h2>6. KMeans</h2>
+  {% if charts.kmeans %}
+    <img src="{{ charts.kmeans }}" alt="KMeans">
+  {% endif %}
+  {% if kmeans.centers %}
+    <table>
+      <thead>
+        <tr><th>Cluster</th>{% for col in kmeans.columns or [] %}<th>{{ col }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for center in kmeans.centers %}
+          <tr><td>{{ loop.index0 }}</td>
+          {% for val in center %}<td>{{ '%.4f' % val if val is number else val }}</td>{% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+
+<div class="section">
+  <h2>7. Association Rules (Top 50)</h2>
+  {% if assoc %}
+    <table>
+      <thead><tr><th>Antecedents</th><th>Consequents</th><th>Support</th><th>Confidence</th><th>Lift</th></tr></thead>
+      <tbody>
+        {% for r in assoc[:50] %}
+          <tr>
+            <td>{{ r.antecedents if r.antecedents is string else (r.antecedents|join(', ')) }}</td>
+            <td>{{ r.consequents if r.consequents is string else (r.consequents|join(', ')) }}</td>
+            <td>{{ '%.3f' % (r.support or 0) }}</td>
+            <td>{{ '%.3f' % (r.confidence or 0) }}</td>
+            <td>{{ '%.3f' % (r.lift or 0) }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No rules available.</p>
+  {% endif %}
+</div>
+
+<div class="section">
+  <h2>8. Summary Statistics</h2>
+  {% if summary %}
+    <table>
+      <thead>
+        <tr><th>Metric</th>{% for col in summary.keys() %}<th>{{ col }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% set metrics = [] %}
+        {% for col,stats in summary.items() %}
+          {% for m,v in stats.items() %}
+            {% if m not in metrics %}{% set _ = metrics.append(m) %}{% endif %}
+          {% endfor %}
+        {% endfor %}
+        {% for m in metrics %}
+          <tr><th>{{ m }}</th>
+            {% for col,stats in summary.items() %}
+              {% set v = stats.get(m,'') %}
+              <td>{{ v }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No summary stats cached.</p>
+  {% endif %}
+</div>
+
+<div class="section">
+  <h2>Appendix</h2>
+  <p class="small">Raw JSON dump (trimmed) can be provided if needed. (Disabled by default).</p>
+</div>
+
+</body>
+</html>

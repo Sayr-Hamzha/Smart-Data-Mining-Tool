@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <title>Data Dashboard – Analysis</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="script.js?v=4.6.2"></script>
+
+
+  <style>
+    /* ---------- Layout ---------- */
+    .analysis-grid{
+      display:grid;
+      grid-template-columns:340px minmax(0,1fr);
+      gap:1.5rem;
+      align-items:flex-start;
+    }
+    @media(max-width:1100px){
+      .analysis-grid{grid-template-columns:minmax(0,1fr);}
+      #left-panel{order:2}
+      #right-panel{order:1}
+    }
+
+    /* ---------- Util bar (match VIS) ---------- */
+    #util-bar{
+      background:var(--accent-grad,linear-gradient(90deg,#02b2ff,#7a4bff));
+      border-radius:18px;
+      padding:.6rem .9rem;
+      display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;
+      margin:0 0 1.2rem 0;
+      box-shadow:0 10px 28px -14px rgba(2,178,255,.45);
+      position:relative;z-index:3;
+    }
+    #util-bar .chip{
+      background:#0d2032;border:1px solid #204158;border-radius:10px;
+      padding:.28rem .55rem;font-size:.56rem;color:#d5e9f7;letter-spacing:.4px;
+    }
+    #util-bar .ver{margin-left:auto;font-size:.55rem;opacity:.7;color:#dbe6f4;}
+    #util-bar button{font-size:.58rem;padding:.32rem .7rem;}
+
+    /* ---------- Panels / Cards ---------- */
+    .panel h2{margin:0;font-size:.9rem;color:#e7f2fb;}
+    fieldset{border:1px solid var(--border);border-radius:var(--radius);padding:.9rem .95rem;margin:0 0 1.2rem;}
+    fieldset legend{padding:0 .4rem;font-size:.62rem;color:#cfdfec;letter-spacing:.4px;}
+    .action-card{
+      background:#0f1c26;border:1px solid #223748;border-radius:12px;
+      padding:1rem 1.1rem;margin-bottom:1.1rem;box-shadow:0 0 0 1px #1d3140;
+    }
+    .action-card h3{margin:.1rem 0 .6rem;font-size:.8rem;color:#cfe3f0;}
+    .action-card p{margin:.15rem 0 .8rem;font-size:.6rem;color:var(--text-dim);line-height:1.45;}
+    .btn-wide{width:100%;justify-content:center;}
+    .status-line{font-size:.55rem;color:var(--text-dim);min-height:14px;margin-top:.35rem;}
+
+    .textarea{min-height:110px;width:100%;}
+    label{display:block;font-size:.6rem;margin-bottom:.28rem;color:#a9bfd1;}
+    select,.input,textarea{width:100%;}
+
+    /* ---------- Preview Box ---------- */
+    #preview-box{
+      min-height:320px;background:#0f1c26;border:1px solid var(--border);
+      border-radius:var(--radius);overflow:auto;padding:.55rem .7rem;
+    }
+    .badge-chip{
+      display:inline-block;background:#1a2e40;border:1px solid #2c4458;
+      border-radius:8px;padding:.28rem .5rem;font-size:.55rem;margin-right:.3rem;color:#dbe8f2;
+    }
+  </style>
+</head>
+
+<body data-page="analysis">
+<header class="navbar">
+  <div class="nav-left">
+    <div class="nav-brand">📊 Data Dashboard</div>
+    <ul class="nav-links">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="analysis.html" class="active">Analysis</a></li>
+      <li><a href="visualization.html">Visualize</a></li>
+      <li><a href="admin.html" class="admin-link">Admin</a></li>
+      <li><a href="#" id="logout-link">Logout</a></li>
+    </ul>
+  </div>
+  <div class="nav-right">
+    <span id="role-badge" class="badge-role">ROLE</span>
+  </div>
+</header>
+
+<main class="wrapper">
+  <!-- Util bar (same as VIS) -->
+  <div id="util-bar">
+    <button class="btn-outline btn-small" id="btn-refresh-meta">Refresh</button>
+    <button class="btn-outline btn-small" id="md-report-btn">Markdown</button>
+    <button class="btn-outline btn-small" id="pdf-report-btn">PDF</button>
+    <button class="btn-outline btn-small" id="btn-clear-cache">Clear Cache</button>
+
+    <span id="active-file-chip" class="chip">Active: —</span>
+    <span class="ver">v4.6 • NIT 3004 H2B1</span>
+  </div>
+
+  <div class="analysis-grid">
+    <!-- LEFT: Actions -->
+    <aside id="left-panel">
+
+      <!-- Auto Explore -->
+      <div class="action-card" id="auto-card">
+        <h3>Auto Explore</h3>
+        <p>Full exploratory pipeline: profiling, stats, correlation, PCA, KMeans, rules & AI narrative. You’ll be taken to Visualize when it’s done.</p>
+        <button class="btn btn-accent btn-wide" id="auto-explore-btn">One‑Click Auto Explore</button>
+        <div id="auto-explore-progress" class="status-line"></div>
+      </div>
+
+      <!-- Manual Analysis -->
+      <div class="action-card">
+        <h3>Manual Analysis</h3>
+        <p>Select a method. After it finishes, you’ll be redirected to Visualize to inspect results.</p>
+
+        <label for="analysis-method">Method</label>
+        <select id="analysis-method" class="input">
+          <option value="summary">Summary</option>
+          <option value="correlation">Correlation Matrix</option>
+          <option value="value_counts">Value Counts (needs column)</option>
+          <option value="pca">PCA</option>
+          <option value="kmeans">KMeans</option>
+          <option value="assoc_rules">Association Rules</option>
+        </select>
+
+        <label for="column-name" style="margin-top:.6rem;">Column (for Value Counts)</label>
+        <input id="column-name" class="input" placeholder="column name">
+
+        <label for="cluster-k" style="margin-top:.6rem;">k (for KMeans)</label>
+        <input id="cluster-k" type="number" value="3" min="2" max="12" class="input">
+
+        <button class="btn-outline btn-small btn-wide" id="analyze-btn">Run Analysis</button>
+        <div id="analysis-status" class="status-line"></div>
+      </div>
+
+      <!-- Cleaning (restored) -->
+      <div class="action-card">
+        <h3>Cleaning</h3>
+        <p>Apply quick cleaning operations to the active dataset.</p>
+        <label class="inline" style="display:flex;align-items:center;gap:.4rem;font-size:.6rem;">
+          <input type="checkbox" id="remove-duplicates"> Remove duplicates
+        </label>
+        <label class="inline" style="display:flex;align-items:center;gap:.4rem;font-size:.6rem;">
+          <input type="checkbox" id="drop-na"> Drop rows with NA
+        </label>
+        <label for="fill-value" style="margin-top:.6rem;">Fill missing with value</label>
+        <input id="fill-value" class="input" placeholder="e.g. 0 or Unknown">
+
+        <button class="btn-outline btn-small btn-wide mt-sm" id="clean-btn">Apply Cleaning</button>
+        <div id="clean-status" class="status-line"></div>
+      </div>
+
+      <!-- AI Insight -->
+      <div class="action-card">
+        <h3>Quick AI Insight</h3>
+        <p>Fast narrative on your current dataset. Saved for Visualize page too.</p>
+
+        <label>Context</label>
+        <select id="chart-type" class="input">
+          <option value="overview">Overview</option>
+          <option value="value_counts">Value Counts</option>
+          <option value="correlation heatmap">Correlation Heatmap</option>
+          <option value="pca scatter">PCA Scatter</option>
+          <option value="kmeans clustering">KMeans Clustering</option>
+          <option value="association rules">Association Rules</option>
+        </select>
+
+        <label style="margin-top:.6rem;">Prompt / Focus</label>
+        <textarea id="chart-description" class="textarea" placeholder="e.g. strongest relationships & anomalies."></textarea>
+
+        <button id="ai-generate-btn" class="btn btn-accent btn-small btn-wide">Generate AI Insight</button>
+        <div id="ai-status" class="status-line"></div>
+
+        <div id="ai-summary" class="ai-box" style="min-height:110px;margin-top:.55rem;">
+          <p class="text-dim m0">No AI insight yet.</p>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT: Preview -->
+    <section id="right-panel" class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Quick Preview</h2>
+        <span class="badge">FIRST 12 ROWS</span>
+      </div>
+      <div id="preview-box"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="text-small text-dim">
+  Data Mining Dashboard – Analysis Module • v4.6 • NIT 3004 H2B1
+</footer>
+
+<script>
+/* Redirect after analyses / hooks */
+(function(){
+  const goViz = ()=>{ window.location.href="visualization.html"; };
+
+  document.addEventListener("DOMContentLoaded", async ()=>{
+    try{
+      await ensureAuthForProtectedPages?.();
+      const active = await syncActiveFile?.(true);
+      if(active){ document.getElementById("active-file-chip").textContent = "Active: "+active; }
+      loadMeta?.();
+    }catch(e){}
+
+    previewDataset?.();
+
+    // Auto Explore
+    $("auto-explore-btn")?.addEventListener("click", async ()=>{
+      const st=$("auto-explore-progress");
+      st.textContent="Running auto exploration...";
+      try{
+        await autoExplore?.();
+        st.textContent="Done ✓ Redirecting…";
+        setTimeout(goViz,600);
+      }catch(e){ st.textContent="Error"; toast(e.message,"error"); }
+    });
+
+    // Manual analysis
+    $("analyze-btn")?.addEventListener("click", async ()=>{
+      const st=$("analysis-status");
+      st.textContent="Running...";
+      try{
+        await runAnalysis?.();
+        st.textContent="Done ✓ Redirecting…";
+        setTimeout(goViz,600);
+      }catch(e){ st.textContent="Error"; toast(e.message,"error"); }
+    });
+
+    // Cleaning
+    $("clean-btn")?.addEventListener("click", async ()=>{
+      const st=$("clean-status");
+      st.textContent="Cleaning...";
+      try{
+        await applyCleaning?.();
+        st.textContent="Cleaned ✓";
+      }catch(e){ st.textContent="Failed"; toast(e.message,"error"); }
+    });
+
+    // AI
+    $("ai-generate-btn")?.addEventListener("click", generateAISummary);
+
+    // Util bar buttons
+    $("btn-refresh-meta")?.addEventListener("click", loadMeta);
+    $("md-report-btn")?.addEventListener("click", downloadMarkdownReport);
+    $("pdf-report-btn")?.addEventListener("click", downloadPdfReport);
+    $("btn-clear-cache")?.addEventListener("click", ()=>{ clearAnalysis?.(); toast("Cache cleared","success"); });
+
+    // Logout
+    $("logout-link")?.addEventListener("click", e=>{ e.preventDefault(); logout?.(); });
+  });
+})();
+</script>
+</body>
+</html>

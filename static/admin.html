@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-page="admin">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Console · Data Mining Suite</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="script.js?v=4.6.2"></script>
+
+  <style>
+    /* ---------- Layout / Grid ---------- */
+    .admin-grid{
+      display:grid;
+      gap:1.4rem;
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      align-items:flex-start;
+      margin-bottom:2.4rem;
+    }
+    .panel h3{margin:0;font-size:.8rem;color:#e7f2fb;}
+    .panel-actions{margin-left:auto;display:flex;gap:.45rem;flex-wrap:wrap;}
+    .form-row{margin-bottom:.55rem;}
+    .form-row label{display:block;font-size:.58rem;color:#a9bfd1;margin-bottom:.22rem;}
+    .form-row .input, .form-row textarea, .form-row select{
+      width:100%;
+      background:#132433;border:1px solid #243748;border-radius:8px;color:#eaf4ff;
+      padding:.44rem .55rem;font-size:.6rem;
+    }
+    textarea.input{min-height:80px;resize:vertical;}
+    .checkbox-group{display:flex;align-items:center;gap:.45rem;margin:.35rem 0;}
+    .checkbox-group input{transform:scale(.9);}
+    pre#admin-audit-box{
+      background:#0f1c26;border:1px solid #1f3447;border-radius:12px;
+      padding:.7rem .9rem;font-size:.58rem;color:#d1e3f2;overflow:auto;
+      white-space:pre-wrap;word-break:break-word;max-height:240px;
+    }
+    .shimmer{
+      background:linear-gradient(90deg,#1a2c3a 25%,#243a4d 37%,#1a2c3a 63%);
+      background-size:400% 100%;animation:shimmer 1.4s infinite;
+      color:transparent;
+    }
+    @keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+
+    /* Util bar (same as VIS) */
+    #util-bar{
+      background:var(--accent-grad,linear-gradient(90deg,#02b2ff,#7a4bff));
+      border-radius:18px;
+      padding:.6rem .9rem;
+      display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;
+      margin:0 0 1.1rem 0;
+      box-shadow:0 10px 28px -14px rgba(2,178,255,.45);
+      position:relative;z-index:3;
+    }
+    #util-bar button{font-size:.58rem;padding:.32rem .7rem;}
+    #util-bar .chip{
+      background:#0d2032;border:1px solid #204158;border-radius:10px;
+      padding:.28rem .55rem;font-size:.56rem;color:#d5e9f7;letter-spacing:.4px;
+    }
+    #util-bar .ver{margin-left:auto;font-size:.55rem;opacity:.7;color:#dbe6f4;}
+
+    .table-scroll{overflow:auto;max-height:230px;border:1px solid #243748;border-radius:12px;padding:.3rem;background:#0f1b24;}
+    table.data-table{border-collapse:collapse;width:100%;font-size:.62rem;color:#d9e7f3;}
+    table.data-table thead th{
+      position:sticky;top:0;background:#1a2c3a;color:#e4edf4;
+      padding:.42rem .55rem;border:1px solid #1e2f3c;font-weight:600;
+    }
+    table.data-table tbody td{
+      padding:.35rem .55rem;border:1px solid #1e2f3c;white-space:nowrap;
+    }
+    table.data-table tbody tr:nth-child(odd){background:#132433;}
+    .text-small{font-size:.58rem;}
+    .mt{margin-top:.55rem;}
+    .hr{height:1px;background:#233747;margin:.8rem 0;}
+  </style>
+</head>
+
+<body>
+  <!-- NAV -->
+  <header class="navbar">
+    <div class="nav-left">
+      <div class="nav-brand">📊 Data Dashboard</div>
+      <ul class="nav-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="analysis.html">Analysis</a></li>
+        <li><a href="visualization.html">Visualize</a></li>
+        <li><a href="admin.html" class="active">Admin</a></li>
+        <li><a href="#" id="logout-link">Logout</a></li>
+      </ul>
+    </div>
+    <div class="nav-right">
+      <span class="badge-role" id="role-badge">ROLE</span>
+    </div>
+  </header>
+
+  <!-- UTIL BAR -->
+  <main class="wrapper">
+    <div id="util-bar">
+      <button class="btn-outline btn-small" id="btn-refresh-meta">Refresh</button>
+      <button class="btn-outline btn-small" id="md-report-btn">Markdown</button>
+      <button class="btn-outline btn-small" id="pdf-report-btn">PDF</button>
+      <button class="btn-outline btn-small" id="btn-clear-cache">Clear Cache</button>
+      <span id="active-file-chip" class="chip">Active: —</span>
+      <span class="ver">v4.3 • NIT 3004 H2B1</span>
+    </div>
+
+    <h2 class="gradient-text" style="font-size:1.05rem;margin:.2rem 0 1rem;">Administration & System Control</h2>
+    <p class="text-small text-dim" style="max-width:780px;margin:.1rem 0 1.4rem;">
+      Manage users, datasets, feature flags, AI configuration and maintenance tasks.
+    </p>
+
+    <section class="admin-grid">
+
+      <!-- Users -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title">Users</h3>
+          <div class="panel-actions">
+            <button class="btn btn-outline btn-small" onclick="adminLoadUsers()">Refresh</button>
+          </div>
+        </div>
+        <div class="form">
+          <div class="form-row">
+            <label>New Username</label>
+            <input id="admin-new-username" class="input" placeholder="username">
+          </div>
+          <div class="form-row">
+            <label>Temp Password</label>
+            <input id="admin-new-password" class="input" placeholder="temp password">
+          </div>
+          <div class="form-row">
+            <label>Role</label>
+            <select id="admin-new-role" class="input">
+              <option value="user" selected>User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <button class="btn btn-accent btn-small" onclick="adminCreateUser()">Create User</button>
+          <div id="admin-user-status" class="text-small mt"></div>
+        </div>
+        <div class="hr"></div>
+        <div id="admin-users-list" class="table-scroll" style="max-height:180px;"></div>
+      </div>
+
+      <!-- Datasets -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title">Datasets</h3>
+          <div class="panel-actions">
+            <button class="btn btn-outline btn-small" onclick="adminLoadFiles()">Refresh</button>
+          </div>
+        </div>
+        <div id="admin-files-list" class="table-scroll" style="max-height:230px;"></div>
+        <div class="hr"></div>
+        <div class="inline" style="gap:.6rem;">
+          <button class="btn btn-danger btn-small" onclick="adminDeleteActive()">Delete Active</button>
+          <button class="btn btn-outline btn-small" onclick="previewDataset()">Preview Active</button>
+        </div>
+        <div id="admin-file-status" class="text-small mt"></div>
+      </div>
+
+      <!-- Feature Flags -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title">Feature Flags</h3>
+        </div>
+        <div class="form text-small">
+          <div class="checkbox-group">
+            <input type="checkbox" id="flag-auto-ai">
+            <label for="flag-auto-ai">Enable Auto AI on Upload</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="flag-assoc-rules">
+            <label for="flag-assoc-rules">Association Rules Module</label>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" id="flag-advanced-pca">
+            <label for="flag-advanced-pca">Advanced PCA Options</label>
+          </div>
+          <button class="btn btn-accent btn-small" onclick="adminSaveFlags()">Save Flags</button>
+          <div id="admin-flags-status" class="text-small mt"></div>
+        </div>
+        <div class="hr"></div>
+        <p class="text-small text-dim m0">Flags are stored client-side (demo). Persist server-side for prod.</p>
+      </div>
+
+      <!-- AI Model Control -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title">AI Model</h3>
+        </div>
+        <div class="form">
+          <div class="form-row">
+            <label>Model Name Override</label>
+            <input id="admin-ai-model" class="input" placeholder="e.g. gpt-4o-mini">
+          </div>
+          <div class="form-row">
+            <label>Prompt Prefix (optional)</label>
+            <textarea id="admin-ai-prefix" class="input" placeholder="Inject global system style..."></textarea>
+          </div>
+          <button class="btn btn-accent btn-small" onclick="adminSaveAIConfig()">Save AI Config</button>
+          <div id="admin-ai-status" class="text-small mt"></div>
+        </div>
+        <div class="hr"></div>
+        <p class="text-small text-dim">Move these into env vars & secure endpoints for production.</p>
+      </div>
+
+      <!-- System Ops -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title">System Ops</h3>
+        </div>
+        <div class="inline" style="gap:.6rem;">
+          <button class="btn btn-small" onclick="adminPing()">Health Ping</button>
+          <button class="btn btn-outline btn-small" onclick="adminClearCache()">Clear LS Cache</button>
+          <button class="btn btn-outline btn-small" onclick="adminReload()">Reload Page</button>
+        </div>
+        <div id="admin-system-status" class="text-small mt"></div>
+        <div class="hr"></div>
+        <p class="text-small text-dim m0">
+          Extend with endpoints for memory usage, queue depth, model reload, dataset indexing, etc.
+        </p>
+      </div>
+
+      <!-- Audit / Logs -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title">Audit Trace (Session)</h3>
+          <div class="panel-actions">
+            <button class="btn btn-outline btn-small" onclick="adminRefreshAudit()">Refresh</button>
+          </div>
+        </div>
+        <pre id="admin-audit-box" class="shimmer">Loading…</pre>
+        <div class="inline" style="gap:.6rem;">
+          <button class="btn btn-outline btn-small" onclick="adminClearAudit()">Clear Trace</button>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="panel" style="grid-column:1/-1;">
+        <div class="panel-header">
+          <h3 class="panel-title">Preview (Active File)</h3>
+          <div class="panel-actions">
+            <button class="btn btn-outline btn-small" onclick="previewDataset()">Refresh Preview</button>
+          </div>
+        </div>
+        <div id="preview-content" class="table-scroll" style="max-height:300px;"></div>
+        <div id="preview-status" class="text-small mt"></div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="text-small text-dim" style="text-align:center;margin:2.2rem 0 1.6rem;">
+    Data Mining Dashboard – Admin Module • v4.3 • NIT 3004 H2B1
+  </footer>
+
+  <!-- Fallback guards (no red lines) -->
+  <script>
+  if(!window.$){window.$=id=>document.getElementById(id);}
+  if(!window.toast){window.toast=(m,t="info")=>console.log("[toast]",t,m);}
+  if(!window.lsGet){window.lsGet=k=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}};}
+  if(!window.lsSet){window.lsSet=(k,v)=>{try{localStorage.setItem(k,typeof v==="string"?v:JSON.stringify(v));}catch{}};}
+  </script>
+
+  <!-- Page bootstrap -->
+  <script>
+  document.addEventListener("DOMContentLoaded", async ()=>{
+    try{
+      await ensureAuthForProtectedPages?.();
+      await syncActiveFile?.(true);
+      loadMeta?.();
+      previewDataset?.();
+      adminLoadUsers?.();
+      adminLoadFiles?.();
+      adminRefreshAudit?.();
+
+      const active = localStorage.getItem("filename");
+      if(active){ const chip=$("active-file-chip"); chip && (chip.textContent="Active: "+active); }
+    }catch(e){ console.warn(e); }
+
+    // Util bar hooks
+    $("btn-refresh-meta")?.addEventListener("click", loadMeta);
+    $("btn-clear-cache")?.addEventListener("click", clearAnalysis);
+    $("md-report-btn")?.addEventListener("click", downloadMarkdownReport);
+    $("pdf-report-btn")?.addEventListener("click", downloadPdfReport);
+
+    // Logout
+    $("logout-link")?.addEventListener("click", e=>{ e.preventDefault(); logout?.(); });
+  });
+
+  /* -------- Admin helper stubs -> extend/server-side later -------- */
+  async function adminLoadFiles(){
+    const box=$("admin-files-list"); if(!box) return;
+    box.innerHTML="<p class='text-small text-dim'>Loading…</p>";
+    try{
+      const js=await handleApi("/api/files");
+      const rows=(js.files||[]).map(f=>`
+        <tr>
+          <td>${f.filename}</td>
+          <td>${f.rows ?? "?"}</td>
+          <td>${f.columns ?? "?"}</td>
+          <td>${f.size_bytes ? (f.size_bytes/1024).toFixed(1)+" KB" : "?"}</td>
+          <td><button class="btn-outline btn-small" onclick="setActive('${f.filename}')">Set Active</button></td>
+        </tr>`).join("");
+      box.innerHTML=`<table class="data-table">
+        <thead><tr><th>Name</th><th>Rows</th><th>Cols</th><th>Size</th><th></th></tr></thead>
+        <tbody>${rows}</tbody></table>`;
+    }catch(e){ box.innerHTML=`<p class='text-small text-danger'>${e.message}</p>`; }
+  }
+  async function setActive(name){
+    try{
+      await handleApi("/api/set_active",{method:"POST",body:{filename:name}});
+      resetAnalysisCacheOnDatasetChange?.(name);
+      toast("Active dataset set to "+name,"success");
+      loadMeta?.(); previewDataset?.();
+      $("active-file-chip") && ($("active-file-chip").textContent="Active: "+name);
+    }catch(e){ toast(e.message,"error"); }
+  }
+  async function adminDeleteActive(){
+    const f=localStorage.getItem("filename");
+    if(!f) return toast("No active file","warn");
+    if(!confirm(`Delete ${f}?`)) return;
+    try{
+      const r=await handleApi("/api/delete",{method:"POST",body:{filename:f}});
+      toast("Deleted "+f,"success"); LS_KEYS_TO_CLEAR.forEach(lsDel); localStorage.removeItem("filename");
+      adminLoadFiles(); loadMeta(); previewDataset();
+    }catch(e){ toast("Delete failed: "+e.message,"error"); }
+  }
+  async function adminCreateUser(){
+    const u=$("admin-new-username").value.trim();
+    const p=$("admin-new-password").value.trim();
+    const r=$("admin-new-role").value;
+    const st=$("admin-user-status");
+    if(!u||!p){ st.textContent="Enter username & password"; return; }
+    try{
+      st.textContent="Creating...";
+      await handleApi("/api/admin/create_user",{method:"POST",body:{username:u,password:p,role:r}});
+      st.textContent="User created ✓"; toast("User created","success");
+      adminLoadUsers();
+    }catch(e){ st.textContent="Error"; toast(e.message,"error"); }
+  }
+  async function adminLoadUsers(){
+    const box=$("admin-users-list"); if(!box) return;
+    box.innerHTML="<p class='text-small text-dim'>Loading…</p>";
+    try{
+      const data=await handleApi("/api/admin/users");
+      let h="<table class='data-table'><thead><tr><th>User</th><th>Role</th></tr></thead><tbody>";
+      data.users.forEach(u=>{ h+=`<tr><td>${u.username}</td><td>${u.role}</td></tr>`; });
+      box.innerHTML=h+"</tbody></table>";
+    }catch(e){ box.innerHTML=`<p class='text-small text-danger'>${e.message}</p>`; }
+  }
+  function adminSaveFlags(){
+    const flags={
+      autoAI: $("flag-auto-ai").checked,
+      assoc : $("flag-assoc-rules").checked,
+      advPCA: $("flag-advanced-pca").checked
+    };
+    lsSet("featureFlags",flags);
+    $("admin-flags-status").textContent="Saved ✓";
+    toast("Flags saved","success");
+  }
+  function adminSaveAIConfig(){
+    const cfg={
+      model: $("admin-ai-model").value.trim(),
+      prefix:$("admin-ai-prefix").value.trim()
+    };
+    lsSet("aiConfig",cfg);
+    $("admin-ai-status").textContent="Saved ✓";
+    toast("AI config saved","success");
+  }
+  function adminPing(){
+    handleApi("/api/ping").then(()=>{$("admin-system-status").textContent="OK ✓";toast("Server OK","success");})
+    .catch(e=>{$("admin-system-status").textContent="Error: "+e.message;toast("Ping failed","error");});
+  }
+  function adminClearCache(){
+    LS_KEYS_TO_CLEAR.forEach(lsDel);
+    toast("Local cache cleared","success");
+  }
+  function adminReload(){ location.reload(); }
+  function adminRefreshAudit(){
+    const box=$("admin-audit-box");
+    let trace=lsGet("auditTrace")||[];
+    if(!Array.isArray(trace)) trace=[trace];
+    if(!trace.length){ box.textContent="(empty)"; box.classList.remove("shimmer"); return; }
+    box.classList.remove("shimmer");
+    box.textContent = trace.map(t=>`• ${t}`).join("\n");
+  }
+  function adminClearAudit(){
+    lsSet("auditTrace",[]);
+    adminRefreshAudit();
+  }
+  </script>
+</body>
+</html>

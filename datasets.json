@@ -1,0 +1,170 @@
+{
+  "Figure2Data-VaccineIntentions.csv": {
+    "filename": "Figure2Data-VaccineIntentions.csv",
+    "size_bytes": 16027,
+    "uploaded_at": "2025-07-20T03:23:20.913460",
+    "rows": 99,
+    "columns": 10
+  },
+  "melbourne_house_data_cleaned.csv": {
+    "filename": "melbourne_house_data_cleaned.csv",
+    "size_bytes": 135512,
+    "uploaded_at": "2025-07-23T18:11:31.050642",
+    "rows": 913,
+    "columns": 22
+  },
+  "cyber-investigations-datasets-with-ice-data-q2-202324.csv": {
+    "filename": "cyber-investigations-datasets-with-ice-data-q2-202324.csv",
+    "size_bytes": 4448,
+    "uploaded_at": "2025-07-20T04:58:01.141293",
+    "rows": 20,
+    "columns": 14
+  },
+  "master-location-identifier-database-202207_obsolete.csv": {
+    "filename": "master-location-identifier-database-202207_obsolete.csv",
+    "size_bytes": 671237,
+    "uploaded_at": "2025-07-20T04:49:58.882181",
+    "rows": 4954,
+    "columns": 22
+  },
+  "overseas_travel_costs_2324.csv": {
+    "filename": "overseas_travel_costs_2324.csv",
+    "size_bytes": 1628,
+    "uploaded_at": "2025-07-20T04:17:52.741979",
+    "rows": null,
+    "columns": null
+  },
+  "time_series_covid19_confirmed_global.csv": {
+    "filename": "time_series_covid19_confirmed_global.csv",
+    "size_bytes": 477788,
+    "uploaded_at": "2025-07-20T04:33:44.238399",
+    "rows": 89,
+    "columns": 1147
+  },
+  "farmincome_wealthstatisticsdata_november2016.csv": {
+    "filename": "farmincome_wealthstatisticsdata_november2016.csv",
+    "size_bytes": 64310620,
+    "uploaded_at": "2025-07-20T04:54:08.654649",
+    "rows": 404457,
+    "columns": 10
+  },
+  "farmincome_wealthstatisticsdata_february2017.csv": {
+    "filename": "farmincome_wealthstatisticsdata_february2017.csv",
+    "size_bytes": 90910099,
+    "uploaded_at": "2025-07-20T04:54:14.000962",
+    "rows": 386580,
+    "columns": 11
+  },
+  "vaccination-metadata.csv": {
+    "filename": "vaccination-metadata.csv",
+    "size_bytes": 85952,
+    "uploaded_at": "2025-07-20T04:54:27.296243",
+    "rows": 1105,
+    "columns": 9
+  },
+  "HousePricesAroundtheWorld.csv": {
+    "filename": "HousePricesAroundtheWorld.csv",
+    "size_bytes": 1757,
+    "uploaded_at": "2025-07-20T04:54:59.119762",
+    "rows": 58,
+    "columns": 3
+  },
+  "netflix_titles.csv": {
+    "filename": "netflix_titles.csv",
+    "size_bytes": 2410660,
+    "uploaded_at": "2025-07-20T05:08:48.168758",
+    "rows": 6234,
+    "columns": 12
+  },
+  "rvregistersept2015unleashed.csv": {
+    "filename": "rvregistersept2015unleashed.csv",
+    "size_bytes": 64912,
+    "uploaded_at": "2025-07-20T05:39:14.732240",
+    "rows": 528,
+    "columns": 9
+  },
+  "e7-2014.csv": {
+    "filename": "e7-2014.csv",
+    "size_bytes": 6323,
+    "uploaded_at": "2025-07-21T19:17:14.138808",
+    "rows": 168,
+    "columns": 15
+  },
+  "sumtab.csv": {
+    "filename": "sumtab.csv",
+    "size_bytes": 13482,
+    "uploaded_at": "2025-07-20T05:39:49.303091",
+    "rows": 169,
+    "columns": 6
+  },
+  "rows.csv": {
+    "filename": "rows.csv",
+    "size_bytes": 427221,
+    "uploaded_at": "2025-07-23T00:16:57.484235",
+    "rows": 7420,
+    "columns": 6
+  },
+  "Disclosure_log_1_October_to_31_December.csv": {
+    "filename": "Disclosure_log_1_October_to_31_December.csv",
+    "size_bytes": 72274,
+    "uploaded_at": "2025-07-23T18:11:23.109288",
+    "rows": 167,
+    "columns": 5
+  },
+  "tr_active2.csv": {
+    "filename": "tr_active2.csv",
+    "size_bytes": 5600533,
+    "uploaded_at": "2025-07-21T19:17:41.618492",
+    "rows": 25978,
+    "columns": 14
+  },
+  "GDP.csv": {
+    "filename": "GDP.csv",
+    "size_bytes": 83,
+    "uploaded_at": "2025-07-22T23:16:21.040749",
+    "rows": 0,
+    "columns": 6
+  },
+  "Goods_Procurement_Contract_Awards_in_Health_Sector.csv": {
+    "filename": "Goods_Procurement_Contract_Awards_in_Health_Sector.csv",
+    "size_bytes": 5153201,
+    "uploaded_at": "2025-07-22T23:23:38.036822",
+    "rows": 15485,
+    "columns": 18
+  },
+  "DS01140.csv": {
+    "filename": "DS01140.csv",
+    "size_bytes": 260628,
+    "uploaded_at": "2025-07-22T23:29:30.466635",
+    "rows": 666,
+    "columns": 18
+  },
+  "fsd-metadata-export-2025-03-18.csv": {
+    "filename": "fsd-metadata-export-2025-03-18.csv",
+    "size_bytes": 202526,
+    "uploaded_at": "2025-07-23T00:17:17.518937",
+    "rows": 262,
+    "columns": 10
+  },
+  "all-states-history.csv": {
+    "filename": "all-states-history.csv",
+    "size_bytes": 2738601,
+    "uploaded_at": "2025-07-23T00:53:31.881005",
+    "rows": 20780,
+    "columns": 41
+  },
+  "pcard-qpa-report-january-march-2024.csv": {
+    "filename": "pcard-qpa-report-january-march-2024.csv",
+    "size_bytes": 3480039,
+    "uploaded_at": "2025-07-23T00:54:32.498444",
+    "rows": 42842,
+    "columns": 6
+  },
+  "DS01581.csv": {
+    "filename": "DS01581.csv",
+    "size_bytes": 3719557,
+    "uploaded_at": "2025-07-23T02:06:02.566425",
+    "rows": 8952,
+    "columns": 18
+  }
+}
