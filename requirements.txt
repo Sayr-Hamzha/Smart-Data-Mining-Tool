@@ -1,7 +1,7 @@
 --only-binary=:all:
 
 # Core data science packages
-numpy==1.26.4
+numpy==1.26.0
 pandas==2.2.2
 scikit-learn==1.4.2
 mlxtend==0.23.1
